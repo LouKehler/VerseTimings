@@ -1,7 +1,7 @@
-CurrentReference=Mrk 1
-VersionName=KCH
+CurrentReference==Mrk 1
+ProjectName=KCH
 ParatextFolder=C:\Users\Sheldon\Dropbox\LeeProjects\VerseTimings\GJK
-SoundFolder=C:\Users\Sheldon\Music\GJKSound
+AudioFolder=C:\Users\Sheldon\Music\GJKSound
 Font=Lateef Sindhi
-FontSize=30
+FontSize=3
 FileType=Paratext

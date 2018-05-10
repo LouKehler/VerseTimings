@@ -1,1 +1,1 @@
-"# VerseTimings" 
+# VerseTimings

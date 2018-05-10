@@ -19,9 +19,6 @@ class options:
     currentProject = ""
     windowRect = "0,0,50,100"
 
-    # def options(self):
-    #     readOptions()
-
     def readOptions(self, proj):
         try:
             print("Reading options")
@@ -30,7 +27,6 @@ class options:
                 if line.startswith("CurrentProject=") :
                     self.currentProject = line[len("CurrentProject="):]
                     if self.currentProject != "":
-                        # proj = project.project()
                         proj.readProject(self.currentProject)
                 elif line.startswith("WindowRect="):
                     self.windowRect = line[len("WindowRect="):]

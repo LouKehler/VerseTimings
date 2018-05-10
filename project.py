@@ -1,6 +1,11 @@
 #!/usr/bin/env python
 
 #############################################################################
+# Todo:
+# 1. Ensure that paths are valid
+# 2. Verify that fontsize is an integer and > 0
+# 3. font size not being saved properly
+#############################################################################
 
 import sys
 import re
@@ -18,7 +23,7 @@ else:
     rsrcPath = ":/images/win"#    public static void readOptions() {
 
 class project :
-    versionName = ""
+    projectName = ""
     paratextFolder = ""
     audioFolderName = ""
     textFont = ""
@@ -46,8 +51,10 @@ class project :
                     #         self.currentBook = i
                     #         break
                     self.currentChapter = mtch.group(2)
+                elif line.startswith("ProjectName="):
+                    self.projectName = line[len("ProjectName="):]
                 elif line.startswith("VersionName="):
-                    self.versionName = line[len("VersionName="):]
+                    self.projectName = line[len("VersionName="):]
                 elif line.startswith("ParatextFolder="):
                     self.paratextFolder = line[len("ParatextFolder="):]
                 elif line.startswith("SoundFolder="):
@@ -76,8 +83,8 @@ class project :
         print("Writing project file")
         try :
             fh = open(currentProject + ".prj", "w+")
-            fh.write("CurrentReference==" + data.book[self.currentBook] + " " + str(self.currentChapter) + "\n")
-            fh.write("VersionName=" + self.versionName + "\n")
+            fh.write("CurrentReference=" + self.currentBook + " " + str(self.currentChapter) + "\n")
+            fh.write("ProjectName=" + self.projectName + "\n")
             fh.write("ParatextFolder=" + self.paratextFolder + "\n")
             fh.write("AudioFolder=" + self.audioFolderName + "\n")
             fh.write("Font=" + self.textFont + "\n")
@@ -142,7 +149,7 @@ class project :
             
             # set up fields
             if newProject:
-                self.versionName = ""
+                self.projectName = ""
                 self.paratextFolder = "c:\\My Paratext 8 Projects"
                 self.textFont = "Times New Roman"
                 self.textSize = 25
@@ -155,9 +162,9 @@ class project :
             index = self.comboBoxProjectType.findText(self.fileType, Qt.MatchFixedString)
             if index >= 0:
                 self.comboBoxProjectType.setCurrentIndex(index)
-            self.lineEditProjectName.setText(self.versionName)
+            self.lineEditProjectName.setText(self.projectName)
             self.lineEditSourcePath.setText(self.paratextFolder)
-            self.lineEditAudioFilesPathPath.setText(self.audioFolderName)
+            self.lineEditAudioFilesPath.setText(self.audioFolderName)
             index = self.comboBoxFont.findText(self.textFont, Qt.MatchFixedString)
             if index >= 0:
                 self.comboBoxFont.setCurrentIndex(index)
@@ -168,8 +175,10 @@ class project :
             self.pushButtonBrowseAudio.clicked.connect(self.browse_audio_path)
             self.lineEditProjectName.textChanged.connect(self.lineEditProjectName_changed)
             self.comboBoxProjectType.currentTextChanged.connect(self.comboBoxProjectType_changed)
-            self.buttonBox.accepted.connect(Dialog.accept)
-            self.buttonBox.rejected.connect(Dialog.reject)
+            self.comboBoxFont.currentTextChanged.connect(self.comboBoxFont_changed)
+            self.lineEditFontSize.textChanged.connect(self.lineEditFontSize_changed)
+            self.buttonBox.accepted.connect(self.accept)
+            self.buttonBox.rejected.connect(self.reject)
             QMetaObject.connectSlotsByName(Dialog)
         except Exception as detail:
             print("Exception: " + detail)
@@ -186,11 +195,13 @@ class project :
         self.groupBox_5.setTitle(_translate("Dialog", "Font"))
 
     def accept(self):
-        self.writeProject(self.versionName)
-        print("OK")
+        self.writeProject(self.projectName)
+        print("Saved project " + self.projectName)
+        self.dialog.close()
 
     def reject(self):
         print("Cancel")
+        self.dialog.close()
 
     def comboBoxProjectType_changed(self):
         self.fileType = self.comboBoxProjectType.currentText()
@@ -208,9 +219,13 @@ class project :
     def lineEditProjectName_changed(self):
         self.comboBoxProjectType_changed()
         self.lineEditSourcePath.setText(self.paratextFolder)
+        self.projectName = self.lineEditProjectName.text()
 
     def comboBoxFont_changed(self):
         self.textFont = self.comboBoxFont.currentText()
+
+    def lineEditFontSize_changed(self):
+        self.textSize = int(self.lineEditFontSize.text())
 
     def browse_source(self):
         try:

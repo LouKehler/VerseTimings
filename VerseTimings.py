@@ -1,6 +1,10 @@
 #!/usr/bin/env python
 
 #############################################################################
+# TODO:
+# 1. on delete project need to update project menu and set project if the
+#    current one was deleted
+#############################################################################
 
 import sys
 
@@ -97,10 +101,17 @@ class Ui_MainWindow(QMainWindow):
     def choose_project(self):
         # print("Name=" + QObject.sender(self).text())
         proj.readProject(QObject.sender(self).text())
+        opt.currentProject = proj.projectName
+        self.setCurrentProjectName(opt.currentProject)
+        opt.writeOptions()
+
+    def setCurrentProjectName(self, projectName=''):
+        opt.currentProject = projectName
+        self.setWindowTitle("VerseTimings - " + opt.currentProject)
 
     def about(self):
         QMessageBox.about(self, "About",
-                          "A tool to set synchronized verse timings for use in BART Bible and Scripture App Builder.")
+                          "VerseTimings is a tool to set synchronized verse timings for use in BART Bible and Scripture App Builder.")
 
     def import_from_BART_binary(self):
         QMessageBox.about(self, "Import",
@@ -134,11 +145,10 @@ class Ui_MainWindow(QMainWindow):
             print("Exception: " + detail)
 
     def delete_project(self):
-        # QMessageBox.about(self, "Delete project",
-        #                   "Not yet implemented.")
-        print("Deleting project " + proj.versionName)
+        print("Deleting project " + proj.projectName)
         try:
-            os.remove(proj.versionName + ".prj")
+            os.remove(proj.projectName + ".prj")
+            # ***** need to update project menu and set project if the current one was deleted
         except OSError:
             pass
 
@@ -184,6 +194,7 @@ class Ui_MainWindow(QMainWindow):
     #     y = 2 * ag.height() - sg.height() - widget.height()
     #     self.move(x, y)
 
+mypath = "."
 my_data = data.data
 opt = options.options()
 proj = project.project()
@@ -195,12 +206,12 @@ if opt.currentProject != "":
     # print("read project " + opt.currentProject)
     print("current ref=" + proj.currentBook + " " + str(proj.currentChapter))
 # opt.writeOptions()
-mypath = "."
 projectfiles = [f[:len(f)-4] for f in listdir(mypath) if isfile(join(mypath, f)) and f.endswith(".prj")]
 print(projectfiles)
 
 app = QApplication(sys.argv)
 mainWindow = Ui_MainWindow()
+mainWindow.setCurrentProjectName(opt.currentProject)
 mainWindow.show()
 
 sys.exit(app.exec_())
